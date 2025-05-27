@@ -1,8 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {
-  Container, Typography, TextField, Button, List, ListItem, ListItemText,
-  Box, Alert, AppBar, Toolbar, IconButton, ThemeProvider, createTheme
+  Container,
+  Typography,
+  TextField,
+  Button,
+  List,
+  ListItem,
+  ListItemText,
+  Box,
+  Alert,
+  AppBar,
+  Toolbar,
+  IconButton,
+  ThemeProvider,
+  createTheme
 } from '@mui/material';
 import LogoutIcon from '@mui/icons-material/Logout';
 
@@ -44,33 +56,54 @@ function LoginRegister({ onLogin }) {
 
   return (
     <ThemeProvider theme={theme}>
-      <Container maxWidth="sm" sx={{ mt: 5, p: 4, borderRadius: 2, boxShadow: 3, bgcolor: 'background.paper' }}>
+      <Container
+        maxWidth="sm"
+        sx={{ mt: 5, p: 4, borderRadius: 2, boxShadow: 3, bgcolor: 'background.paper' }}
+      >
         <Typography variant="h4" align="center" gutterBottom sx={{ color: 'primary.main' }}>
           {isRegister ? 'Únete a CritiCorner' : 'Bienvenido a CritiCorner'}
         </Typography>
         {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
         <TextField
           label="Usuario"
-          fullWidth margin="normal"
-          value={username} onChange={(e) => setUsername(e.target.value)} sx={{ bgcolor: '#FFF' }}
+          fullWidth
+          margin="normal"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          sx={{ bgcolor: '#FFF' }}
         />
         <TextField
-          label="Contraseña" type="password"
-          fullWidth margin="normal"
-          value={password} onChange={(e) => setPassword(e.target.value)} sx={{ bgcolor: '#FFF' }}
+          label="Contraseña"
+          type="password"
+          fullWidth
+          margin="normal"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          sx={{ bgcolor: '#FFF' }}
         />
         {isRegister && (
           <TextField
-            label="Email" type="email"
-            fullWidth margin="normal"
-            value={email} onChange={(e) => setEmail(e.target.value)} sx={{ bgcolor: '#FFF' }}
+            label="Email"
+            type="email"
+            fullWidth
+            margin="normal"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            sx={{ bgcolor: '#FFF' }}
           />
         )}
-        <Button variant="contained" color="primary" fullWidth sx={{ mt: 3 }} onClick={submit}>
+        <Button
+          variant="contained"
+          color="primary"
+          fullWidth
+          sx={{ mt: 3 }}
+          onClick={submit}
+        >
           {isRegister ? 'Registrar' : 'Ingresar'}
         </Button>
         <Typography
-          variant="body2" align="center"
+          variant="body2"
+          align="center"
           sx={{ mt: 2, cursor: 'pointer', color: 'secondary.main' }}
           onClick={() => { setIsRegister(!isRegister); setError(''); }}
         >
@@ -107,15 +140,21 @@ function Movies({ token, onLogout }) {
   const createMovie = async () => {
     setError('');
     if (!newTitle || !newYear || !newMetascore) {
-      setError('Debe ingresar título, año y metascore'); return;
+      setError('Debe ingresar título, año y metascore');
+      return;
     }
-    if (isNaN(newMetascore)) { setError('Metascore debe ser un número'); return; }
+    if (isNaN(newMetascore)) {
+      setError('Metascore debe ser un número');
+      return;
+    }
     try {
-      await axios.post(`${apiUrl}/movies`,
+      await axios.post(
+        `${apiUrl}/movies`,
         { title: newTitle, year: parseInt(newYear), metascore: parseInt(newMetascore) },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      setNewTitle(''); setNewYear(''); setNewMetascore(''); fetchMovies();
+      setNewTitle(''); setNewYear(''); setNewMetascore('');
+      fetchMovies();
     } catch (err) {
       setError(err.response?.data?.msg || 'Error creando película');
     }
@@ -125,20 +164,25 @@ function Movies({ token, onLogout }) {
     setError('');
     try {
       const res = await axios.get(`${apiUrl}/reviews/movie/${movieId}`);
-      setReviews(res.data); setSelectedMovie(movieId);
+      setReviews(res.data);
+      setSelectedMovie(movieId);
     } catch {
       setError('Error al cargar reseñas');
     }
   };
 
   const createReview = async () => {
-    setError(''); if (!newComment) { setError('Ingresa un comentario'); return; }
+    setError('');
+    if (!newComment) { setError('Ingresa un comentario'); return; }
     try {
-      await axios.post(`${apiUrl}/reviews`,
+      await axios.post(
+        `${apiUrl}/reviews`,
         { movie_id: selectedMovie, comment: newComment, puntuacion: newScore },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      setNewComment(''); setNewScore(5); fetchReviews(selectedMovie);
+      setNewComment(''); setNewScore(5);
+      await fetchReviews(selectedMovie);
+      await fetchMovies();
     } catch (err) {
       setError(err.response?.data?.msg || 'Error creando reseña');
     }
@@ -146,13 +190,18 @@ function Movies({ token, onLogout }) {
 
   return (
     <ThemeProvider theme={theme}>
-      <Container maxWidth="md" sx={{ mt: 5, bgcolor: 'background.paper', p: 3, borderRadius: 2 }}>
+      <Container
+        maxWidth="md"
+        sx={{ mt: 5, bgcolor: 'background.paper', p: 3, borderRadius: 2 }}
+      >
         <AppBar position="static" sx={{ mb: 4, bgcolor: 'secondary.main' }}>
           <Toolbar>
             <Typography variant="h6" sx={{ flexGrow: 1, color: '#FFF' }}>
               Bienvenido a CritiCorner
             </Typography>
-            <IconButton color="inherit" onClick={onLogout}><LogoutIcon/></IconButton>
+            <IconButton color="inherit" onClick={onLogout}>
+              <LogoutIcon />
+            </IconButton>
           </Toolbar>
         </AppBar>
 
@@ -164,12 +213,18 @@ function Movies({ token, onLogout }) {
 
         <List sx={{ mb: 4 }}>
           {movies.map((movie) => (
-            <ListItem key={movie.id} sx={{ bgcolor: '#FAF3DD', mb: 1, borderRadius: 1 }}
-              secondaryAction={<Button variant="outlined" onClick={() => fetchReviews(movie.id)}>Ver reseñas</Button>}
+            <ListItem
+              key={movie.id}
+              sx={{ bgcolor: '#FAF3DD', mb: 1, borderRadius: 1 }}
+              secondaryAction={
+                <Button variant="outlined" onClick={() => fetchReviews(movie.id)}>
+                  Ver reseñas
+                </Button>
+              }
             >
               <ListItemText
                 primary={`${movie.title} (${movie.year})`}
-                secondary={`Metascore: ${movie.metascore} - Userscore: ${movie.userscore ?? '-'} `}
+                secondary={`Metascore: ${movie.metascore} - Userscore: ${movie.userscore !== null ? movie.userscore : '-'} `}
               />
             </ListItem>
           ))}
@@ -180,31 +235,71 @@ function Movies({ token, onLogout }) {
         </Typography>
 
         <Box component="form" noValidate autoComplete="off"
-          sx={{ display: 'flex', flexDirection: 'column', gap: 2, maxWidth: 400 }}>
-          <TextField label="Título" value={newTitle} onChange={(e)=>setNewTitle(e.target.value)} required/>
-          <TextField label="Año" type="number" value={newYear} onChange={(e)=>setNewYear(e.target.value)} required/>
-          <TextField label="Metascore" type="number" value={newMetascore} onChange={(e)=>setNewMetascore(e.target.value)} required/>
-          <Button variant="contained" onClick={createMovie} sx={{ bgcolor: 'primary.main' }}>Crear película</Button>
+          sx={{ display: 'flex', flexDirection: 'column', gap: 2, maxWidth: 400 }}
+        >
+          <TextField
+            label="Título"
+            value={newTitle}
+            onChange={(e) => setNewTitle(e.target.value)}
+            required
+          />
+          <TextField
+            label="Año"
+            type="number"
+            value={newYear}
+            onChange={(e) => setNewYear(e.target.value)}
+            required
+          />
+          <TextField
+            label="Metascore"
+            type="number"
+            value={newMetascore}
+            onChange={(e) => setNewMetascore(e.target.value)}
+            required
+          />
+          <Button variant="contained" onClick={createMovie} sx={{ bgcolor: 'primary.main' }}>
+            Crear película
+          </Button>
         </Box>
 
         {selectedMovie && (
           <>
             <Typography variant="h5" sx={{ mt: 5, mb: 2, color: 'primary.main' }}>
-              Reseñas de {movies.find((m)=>m.id===selectedMovie)?.title}
+              Reseñas de {movies.find((m) => m.id === selectedMovie)?.title}
             </Typography>
             <List sx={{ mb: 4 }}>
-              {reviews.map((r)=>(
+              {reviews.map((r) => (
                 <ListItem key={r.id} sx={{ bgcolor: '#EBF5EE', mb: 1, borderRadius: 1 }}>
-                  <ListItemText primary={`${r.user}: ${r.comment}`} secondary={`Puntuación: ${r.puntuacion}`}/>
+                  <ListItemText
+                    primary={`${r.user}: ${r.comment}`}
+                    secondary={`Puntuación: ${r.puntuacion}`}
+                  />
                 </ListItem>
               ))}
             </List>
 
             <Box component="form" noValidate autoComplete="off"
-              sx={{ display: 'flex', flexDirection: 'column', gap: 2, maxWidth: 400 }}>
-              <TextField label="Comentario" multiline rows={3} value={newComment} onChange={(e)=>setNewComment(e.target.value)} required/>
-              <TextField label="Puntuación (1-10)" type="number" value={newScore} onChange={(e)=>setNewScore(e.target.value)} inputProps={{min:1,max:10}} required/>
-              <Button variant="contained" onClick={createReview} sx={{ bgcolor: 'secondary.main' }}>Enviar reseña</Button>
+              sx={{ display: 'flex', flexDirection: 'column', gap: 2, maxWidth: 400 }}
+            >
+              <TextField
+                label="Comentario"
+                multiline
+                rows={3}
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                required
+              />
+              <TextField
+                label="Puntuación (1-10)"
+                type="number"
+                value={newScore}
+                onChange={(e) => setNewScore(e.target.value)}
+                inputProps={{ min: 1, max: 10 }}
+                required
+              />
+              <Button variant="contained" onClick={createReview} sx={{ bgcolor: 'secondary.main' }}>
+                Enviar reseña
+              </Button>
             </Box>
           </>
         )}
@@ -220,5 +315,5 @@ export default function App() {
   const onLogin = (token, username) => { setToken(token); setUsername(username); };
   const onLogout = () => { setToken(''); setUsername(''); };
 
-  return token ? <Movies token={token} onLogout={onLogout} username={username}/> : <LoginRegister onLogin={onLogin}/>;
+  return token ? <Movies token={token} onLogout={onLogout} username={username} /> : <LoginRegister onLogin={onLogin} />;
 }
